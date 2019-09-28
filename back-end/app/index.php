@@ -4,11 +4,6 @@
  * Initial class
  */
 class InitialClass{
-	public function __construct()
-	{
-		$this->getSortedTravelWithSentences();
-	}
-
 	public function getSortedTravelWithSentences()
 	{
 		$travels = $this->getSortedTravel();
@@ -210,3 +205,4 @@ class InitialClass{
 }
 
 $init = new InitialClass;
+$init->getSortedTravelWithSentences();
