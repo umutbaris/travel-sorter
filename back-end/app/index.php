@@ -12,17 +12,33 @@ class InitialClass{
 	public function getSortedTravelWithSentences()
 	{
 		$travels = $this->getSortedTravel();
-		var_dump($travels);
+		$sentences = [];
+		foreach($travels as $travel){
+			if($travel["transport"] === "train"){
+				echo $this->sentenceForTrain($travel) . "<br>";
+			}
+			if($travel["transport"] === "airbus"){
+				echo $this->sentenceForAirbus($travel) . "<br>";
+			}
+			if($travel["transport"] === "bus"){
+				echo $this->sentenceForBus($travel) . "<br>";
+			}
+		}
 	}
 
-	public function getSortedTravel()
+	/**
+	 * Unsorted travel data sorted
+	 *
+	 * @return array
+	 */
+	public function getSortedTravel(): array
 	{
 		$travels = $this->getTravelData();
 		$departures = [];
 		$arrivals = [];
 		foreach($travels as $travel){
-			array_push($departures, $travel['from']);
-			array_push($arrivals, $travel['to']);
+			array_push($departures, $travel["from"]);
+			array_push($arrivals, $travel["to"]);
 		}
 
 		$allStops = array_merge($departures, $arrivals);
@@ -61,10 +77,10 @@ class InitialClass{
 		$firstAndLastTravels = [];
 		foreach ($travels as $travel){
 			foreach($firstAndLast as $stop){
-				if($travel['from'] === $stop){
+				if($travel["from"] === $stop){
 					$firstTravel = $travel;
 				}
-				if($travel['to'] === $stop){
+				if($travel["to"] === $stop){
 					$lastTravel = $travel;
 				}
 			}
@@ -86,9 +102,11 @@ class InitialClass{
 	public function sortTravels(array $travels, array $firstAndLastTravel): array
 	{
 		$startStop = $firstAndLastTravel[0];
-		$sortedTravel = $startStop;
+		$sortedTravel = [];
+		array_push($sortedTravel, $startStop);
+		
 		foreach ($travels as $travel){
-			if($travel['from'] === $startStop['to']){
+			if($travel["from"] === $startStop["to"]){
 				array_push($sortedTravel, $travel);
 				$startStop = $travel;
 			}
@@ -98,8 +116,55 @@ class InitialClass{
 		return $sortedTravel;
 	}
 
-	public function sentenceWithTrain()
+	/**
+	 * Creating sentences from travel data
+	 *
+	 * @param array $travel
+	 * @return string
+	 */
+	public function sentenceForTrain(array $travel): string
 	{
+		return  "Take train " .  $travel['number'] . " from " . $travel['from'] . " to " . $travel['to']. " Seat number: " . $this->getSeatInfo($travel); 
+	}
+
+	public function sentenceForAirbus(array $travel): string
+	{
+		return  "From " .  $travel['from'] . " take flight " . $travel['flight'] . " to " . $travel['to'] . " Gate " . $travel['gate'] .  ", seat 	" . $travel["seatNumber"] . ". " . $this->getBaggageInfo($travel); 
+	}
+
+	public function sentenceForBus(array $travel): string
+	{
+		return  "Take the airport bus from " .  $travel['from'] . " to " . $travel['to'] . " to " . $travel['to'] . $this->getSeatInfo($travel);
+	}
+
+	/**
+	 * Checking baggage drop for baggage info
+	 *
+	 * @param array $travel
+	 * @return string
+	 */
+	public function getBaggageInfo(array $travel): string
+	{
+		if(!empty($travel['baggageDrop'])){
+			return "Baggage drop at ticket counter " . $travel['baggageDrop'] .  ".";
+		} else {
+			return "Baggage will we automatically transferred from your last leg.";
+		}
+	}
+
+	/**
+	 * Checking seat for seat info
+	 *
+	 * @param array $travel
+	 * @return string
+	 */
+	public function getSeatInfo(array $travel): string
+	{
+		if(!empty($travel['seatNumber'])){
+			return "Seat Number " . $travel['seatNumber'];
+		} else {
+			return "No seat assignment.";
+		}
 	}
 
 	/**
@@ -111,29 +176,30 @@ class InitialClass{
 	{
 		return $unorderTravels = [
 			"travel2" => [
-				"from" => 'Barcelona',
-				"to" => 'Gerona',
-				"transport" => 'airbus',
+				"from" => "Barcelona",
+				"to" => "Gerona Airport",
+				"transport" => "bus",
 				"seatNumber" => ""
 			],
 			"travel1" => [
-				"from" => 'Madrid',
-				"to" => 'Barcelona',
-				"transport" => 'train',
+				"from" => "Madrid",
+				"to" => "Barcelona",
+				"number" => "78A",
+				"transport" => "train",
 				"seatNumber" => "45B"
 			],
 			"travel4" => [
-				"from" => 'Stockholm',
-				"to" => 'New York',
-				"transport" => 'airbus',
+				"from" => "Stockholm",
+				"to" => "New York",
+				"transport" => "airbus",
 				"seatNumber" => "7B",
 				"gate" => "22B",
-				"baggageDrop" => "auto",
+				"baggageDrop" => "",
 			],
 			"travel3" => [
-				"from" => 'Gerona',
-				"to" => 'Stockholm',
-				"transport" => 'airbus',
+				"from" => "Gerona Airport",
+				"to" => "Stockholm",
+				"transport" => "airbus",
 				"seatNumber" => "3A",
 				"flight" => "SK455",
 				"gate" => "45B",
